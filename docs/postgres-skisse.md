@@ -2,6 +2,13 @@
 
 Utkast basert på utforskningen – justeres når vi skalerer opp.
 
+> **Status august 2026:** Dashbord-fasen bruker DuckDB (`data/bedriftdata.duckdb`)
+> med et skjema som følger denne skissen tett (se `src/bedriftdata/db.py` for
+> fasiten – bl.a. er `hentestatus`- og `utvalg`-tabeller kommet til, og
+> roller lagres som daterte snapshots i stedet for SCD2). Migreringen til
+> PostgreSQL blir i hovedsak `CREATE TABLE` + `COPY`, siden typene er
+> holdt portable og rå-JSON ligger i basen.
+
 ## Prinsipper
 
 1. **Rådata + modellerte tabeller.** API-svar lagres som `jsonb` i råtabeller

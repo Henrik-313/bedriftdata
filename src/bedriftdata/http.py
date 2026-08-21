@@ -7,6 +7,7 @@ oppfører oss pent mot offentlige API-er under utforskningen.
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -69,6 +70,37 @@ class PoliteClient:
         if siste_respons is not None:
             return siste_respons
         raise siste_feil  # type: ignore[misc]  # alle forsøk ga transportfeil
+
+    def last_ned_fil(
+        self,
+        url: str,
+        mal_sti: Path,
+        timeout: float = 900.0,
+        headers: dict[str, str] | None = None,
+    ) -> int:
+        """Laster ned en (potensielt stor) fil strømmende til disk. Returnerer antall byte.
+
+        Skriver til en midlertidig fil og bytter inn til slutt, så en avbrutt
+        nedlasting aldri etterlater en halv fil på målstien.
+        """
+        from tqdm import tqdm
+
+        self._vent()
+        mal_sti.parent.mkdir(parents=True, exist_ok=True)
+        tmp_sti = mal_sti.with_suffix(mal_sti.suffix + ".del")
+        alle_headers = {"Accept": "*/*", **(headers or {})}
+        with self._client.stream("GET", url, headers=alle_headers, timeout=timeout) as respons:
+            respons.raise_for_status()
+            total = int(respons.headers.get("content-length", 0)) or None
+            med_progresjon = tqdm(
+                total=total, unit="B", unit_scale=True, desc=mal_sti.name, leave=False
+            )
+            with open(tmp_sti, "wb") as fil, med_progresjon as progresjon:
+                for bit in respons.iter_bytes(chunk_size=1 << 20):
+                    fil.write(bit)
+                    progresjon.update(len(bit))
+        tmp_sti.replace(mal_sti)
+        return mal_sti.stat().st_size
 
     def get_json(self, url: str, params: dict[str, Any] | None = None) -> Any | None:
         """Henter JSON. Returnerer None ved 404/410 (ressurs finnes ikke)."""
