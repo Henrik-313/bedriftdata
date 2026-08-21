@@ -1,0 +1,33 @@
+[project]
+name = "bedriftdata"
+version = "0.1.0"
+description = "Utforskning og innsamling av åpne data om norske bedrifter"
+readme = "README.md"
+authors = [
+    { name = "Henrik Rasmussen", email = "hra@osloeconomics.no" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "pandas>=3.0.5",
+    "pyarrow>=25.0.1",
+    "tabulate>=0.10.0",
+    "tqdm>=4.70.0",
+    "yfinance>=1.6.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.9,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.4",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]

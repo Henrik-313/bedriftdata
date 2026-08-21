@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Nedlastede rådata og mellomlagrede utvalg (kan reproduseres med skriptene)
+data/
+
+# Verktøy-cache
+.ruff_cache/
