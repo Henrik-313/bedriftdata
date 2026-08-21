@@ -1,0 +1,54 @@
+# Konfigurasjon for ingest-pipelinen.
+# Utvalgsreglene styrer hvilke selskaper som høstes per-orgnr (regnskap, roller,
+# årsregnskaps-metadata). Utvid antall/regler her for å skalere opp – ingen kodeendring.
+
+[lagring]
+db_sti = "data/bedriftdata.duckdb"
+
+[hosting]
+friskhet_dager = 30
+requests_per_second = 4.0
+
+[valutakurser]
+valutaer = ["USD", "EUR", "GBP", "SEK", "DKK", "CAD"]
+start_aar = 2014
+
+# ~2 000 enheter totalt (fase 1-testutvalg). Trekkes deterministisk per regel
+# med ORDER BY hash(orgnr), så samme config gir samme utvalg.
+
+[[utvalg.regler]]
+navn = "asa-alle"
+orgform = "ASA"
+
+[[utvalg.regler]]
+navn = "as-250plus"
+orgform = "AS"
+ansatte_min = 250
+antall = 385
+
+[[utvalg.regler]]
+navn = "as-50-249"
+orgform = "AS"
+ansatte_min = 50
+ansatte_max = 249
+antall = 400
+
+[[utvalg.regler]]
+navn = "as-10-49"
+orgform = "AS"
+ansatte_min = 10
+ansatte_max = 49
+antall = 400
+
+[[utvalg.regler]]
+navn = "as-1-9"
+orgform = "AS"
+ansatte_min = 1
+ansatte_max = 9
+antall = 300
+
+[[utvalg.regler]]
+navn = "as-0"
+orgform = "AS"
+ansatte_max = 0
+antall = 300

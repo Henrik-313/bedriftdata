@@ -8,13 +8,18 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "duckdb>=1.4",
     "httpx>=0.28.1",
     "pandas>=3.0.5",
+    "plotly>=6.3",
     "pyarrow>=25.0.1",
+    "streamlit>=1.46",
     "tabulate>=0.10.0",
     "tqdm>=4.70.0",
-    "yfinance>=1.6.0",
 ]
+
+[project.scripts]
+bedriftdata = "bedriftdata.ingest.__main__:main"
 
 [build-system]
 requires = ["uv_build>=0.11.9,<0.12.0"]
@@ -22,8 +27,17 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pytest>=8",
     "ruff>=0.16.4",
 ]
+# yfinance er kun lisensiert for personlig bruk – holdes utenfor standardmiljøet.
+# Trengs bare for explore/05_aksjekurs.py: `uv sync --group explore`
+explore = [
+    "yfinance>=1.6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
