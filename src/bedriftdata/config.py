@@ -25,6 +25,7 @@ class Konfig:
     db_sti: Path
     friskhet_dager: int = 30
     requests_per_second: float = 4.0
+    aarsregnskap_rps: float = 1.5  # kopi-API-et har strengere rategrense (429)
     valutaer: list[str] = field(default_factory=list)
     valuta_start_aar: int = 2014
     utvalgsregler: list[UtvalgsRegel] = field(default_factory=list)
@@ -54,6 +55,7 @@ def last_konfig(sti: Path | None = None) -> Konfig:
         db_sti=db_sti,
         friskhet_dager=int(hosting.get("friskhet_dager", 30)),
         requests_per_second=float(hosting.get("requests_per_second", 4.0)),
+        aarsregnskap_rps=float(hosting.get("aarsregnskap_requests_per_second", 1.5)),
         valutaer=list(valuta.get("valutaer", [])),
         valuta_start_aar=int(valuta.get("start_aar", 2014)),
         utvalgsregler=regler,

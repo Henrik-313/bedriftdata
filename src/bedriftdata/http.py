@@ -51,6 +51,7 @@ class PoliteClient:
         siste_feil: Exception | None = None
         for forsok in range(max_forsok):
             self._vent()
+            retry_after = 0
             try:
                 respons = self._client.get(
                     url,
@@ -65,8 +66,12 @@ class PoliteClient:
                     return respons
                 siste_respons = respons
                 siste_feil = None
+                # Ved 429 sier serveren ofte selv hvor lenge vi skal vente
+                header = respons.headers.get("Retry-After", "")
+                if header.isdigit():
+                    retry_after = int(header)
             if forsok < max_forsok - 1:
-                time.sleep(2**forsok)
+                time.sleep(max(2**forsok, retry_after))
         if siste_respons is not None:
             return siste_respons
         raise siste_feil  # type: ignore[misc]  # alle forsøk ga transportfeil

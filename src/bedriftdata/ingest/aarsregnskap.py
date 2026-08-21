@@ -34,4 +34,13 @@ def kjor(
     limit: int | None = None,
     force: bool = False,
 ) -> None:
-    kjor_hosting(con, konfig, "aarsregnskap_aar", _hent_og_skriv, limit=limit, force=force)
+    # Kopi-API-et svarer 429 ved samme rate som de andre endepunktene tåler
+    kjor_hosting(
+        con,
+        konfig,
+        "aarsregnskap_aar",
+        _hent_og_skriv,
+        limit=limit,
+        force=force,
+        requests_per_second=konfig.aarsregnskap_rps,
+    )

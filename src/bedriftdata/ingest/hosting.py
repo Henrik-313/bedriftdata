@@ -101,6 +101,7 @@ def kjor_hosting(
     jobb: HosteFunksjon,
     limit: int | None = None,
     force: bool = False,
+    requests_per_second: float | None = None,
 ) -> None:
     """Kjører en per-orgnr-jobb over utvalget med resume og feilhåndtering."""
     kandidater = _velg_orgnr(con, kilde, konfig.friskhet_dager, force, limit)
@@ -111,10 +112,11 @@ def kjor_hosting(
     if not kandidater:
         return
 
-    detaljer = {"kandidater": len(kandidater), "force": force, "limit": limit}
+    rps = requests_per_second or konfig.requests_per_second
+    detaljer = {"kandidater": len(kandidater), "force": force, "limit": limit, "rps": rps}
     with (
         Innlasting(con, kilde, detaljer) as logg,
-        PoliteClient(requests_per_second=konfig.requests_per_second) as client,
+        PoliteClient(requests_per_second=rps) as client,
     ):
         nye_permanente = 0
         for orgnr, naeringskode in tqdm(kandidater, unit="orgnr"):

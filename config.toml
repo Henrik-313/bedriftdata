@@ -8,6 +8,8 @@ db_sti = "data/bedriftdata.duckdb"
 [hosting]
 friskhet_dager = 30
 requests_per_second = 4.0
+# Kopi-API-et for årsregnskap har strengere rategrense (gir 429 ved 4 rps)
+aarsregnskap_requests_per_second = 1.5
 
 [valutakurser]
 valutaer = ["USD", "EUR", "GBP", "SEK", "DKK", "CAD"]
