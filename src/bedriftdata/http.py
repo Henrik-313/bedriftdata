@@ -39,14 +39,24 @@ class PoliteClient:
         self._forrige_kall = time.monotonic()
 
     def get(
-        self, url: str, params: dict[str, Any] | None = None, max_forsok: int = 4
+        self,
+        url: str,
+        params: dict[str, Any] | None = None,
+        max_forsok: int = 4,
+        headers: dict[str, str] | None = None,
+        timeout: float | None = None,
     ) -> httpx.Response:
         siste_respons: httpx.Response | None = None
         siste_feil: Exception | None = None
         for forsok in range(max_forsok):
             self._vent()
             try:
-                respons = self._client.get(url, params=params)
+                respons = self._client.get(
+                    url,
+                    params=params,
+                    headers=headers,
+                    timeout=timeout if timeout is not None else httpx.USE_CLIENT_DEFAULT,
+                )
             except httpx.TransportError as feil:
                 siste_feil = feil
             else:

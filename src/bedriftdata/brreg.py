@@ -96,8 +96,16 @@ def hent_aarsregnskap_aar(client: PoliteClient, orgnr: str) -> list[str] | None:
 
 
 def hent_aarsregnskap_pdf(client: PoliteClient, orgnr: str, aar: str) -> bytes | None:
-    """Laster ned innsendt årsregnskap som PDF. Returnerer None hvis det ikke finnes."""
-    respons = client.get(AARSREGNSKAP_PDF_URL.format(orgnr=orgnr, aar=aar))
+    """Laster ned innsendt årsregnskap som PDF. Returnerer None hvis det ikke finnes.
+
+    NB: endepunktet svarer 406 på `Accept: application/pdf` – bruk `*/*`.
+    Store rapporter kan ta over et minutt å generere på serversiden.
+    """
+    respons = client.get(
+        AARSREGNSKAP_PDF_URL.format(orgnr=orgnr, aar=aar),
+        headers={"Accept": "*/*"},
+        timeout=180.0,
+    )
     if respons.status_code in (404, 410):
         return None
     respons.raise_for_status()
